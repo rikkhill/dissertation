@@ -31,6 +31,6 @@ year_ages.columns = ["year", "age"]
 year_ages = year_ages[year_ages["year"] > 1971]
 
 year_means = year_ages.groupby(["year"])["age"].mean()
-plt.figure()
+
 year_means.plot()
 plt.show()
