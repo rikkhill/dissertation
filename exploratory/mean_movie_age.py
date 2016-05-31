@@ -1,3 +1,5 @@
+# Plot mean age of movie rater
+
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
@@ -14,28 +16,21 @@ user_ages.columns = ['userId', 'gender', 'age', 'occupation', 'zip']
 user_ages.set_index('userId', inplace=True)
 
 ratings = pd.read_csv("./data/1M/ratings.dat",
-                        sep='::',
-                        engine='python',
-                        header=None)
+                      sep='::',
+                      engine='python',
+                      header=None)
 
 ratings.columns = ['userId', 'movieId', 'rating', 'timestamp']
 
 ratings_age = ratings.userId.apply(lambda x: user_ages.ix[x, 'age'] + 5)
 ratings_year = ratings.movieId.apply(lambda x: movie_years.ix[x, 'year'])
 
-X = ratings_age.as_matrix()
-X = sm.add_constant(X)
+year_ages = pd.concat([ratings_year, ratings_age], axis=1, ignore_index=True)
+year_ages.columns = ["year", "age"]
 
-y = ratings_year.as_matrix()
+year_ages = year_ages[year_ages["year"] > 1971]
 
-res = sm.OLS(y, X).fit()
-prstd, iv_l, iv_u = wls_prediction_std(res)
-
-fig, ax = plt.subplots(figsize=(8,6))
-
-ax.plot(X, y, 'o', label="Data")
-ax.plot(X, res.fittedvalues, 'r--.', label="Predicted")
-ax.plot(X, iv_u, 'r--')
-ax.plot(X, iv_l, 'r--')
-legend = ax.legend(loc="best")
-plt.show(fig)
+year_means = year_ages.groupby(["year"])["age"].mean()
+plt.figure()
+year_means.plot()
+plt.show()
