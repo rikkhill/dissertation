@@ -37,7 +37,7 @@ def callout(arg):
     print(arg.frobenius_norm(complement=True))
 
 nmf_model = WNMF(rMatrix, weight_matrix, num_bases=K, mask_zeros=True)
-nmf_model.factorize(niter=10, show_progress=True, epoch_hook=lambda x: callout(x))
+nmf_model.factorize(niter=32, show_progress=True, epoch_hook=lambda x: callout(x))
 
 movies = nmf_model.W
 users = nmf_model.H
