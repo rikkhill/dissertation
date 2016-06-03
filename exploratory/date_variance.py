@@ -16,7 +16,7 @@ else:
 try:
     sys.argv[2]
 except IndexError:
-    fact_dir = "./output/factorisations/wnmf/"
+    fact_dir = "./output/factorisations/bnmf/"
 else:
     fact_dir = int(sys.argv[2])
 
@@ -40,6 +40,9 @@ movie_examples = []
 # Sample 50 movies from each basis
 for i in range(0, K):
     col_array = np.asarray(movie_matrix[:, i])
+
+    print("Responsibility of basis %d: %d" % (i, np.linalg.norm(col_array)))
+
     top_n_movies = col_array.argsort()[-50:][::-1]
     movie_examples.append(top_n_movies)
 
@@ -57,8 +60,8 @@ factor_frame.columns = ['factor', 'index', 'year']
 
 # Carry out ANOVA
 fitted = ols('year ~ C(factor)', data=factor_frame).fit()
-# print(sm.stats.anova_lm(fitted, typ=2))
-print(fitted.summary())
+print(sm.stats.anova_lm(fitted, typ=2))
+# print(fitted.summary())
 
 
 # Make it look nice

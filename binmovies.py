@@ -2,6 +2,8 @@ from pymf import BNMF
 import pandas as pd
 import numpy as np
 
+K = 100
+
 # Read in ratings data
 ratings = pd.read_csv("./data/1M/ratings.dat", sep='::', engine='python')
 ratings.columns = ['userId', 'movieId', 'rating', 'timestamp']
@@ -15,13 +17,13 @@ rm = rm.as_matrix()
 rm[rm > 0] = 1
 
 # Factorise it
-bnmf_model = BNMF(rm, num_bases=50)
-bnmf_model.factorize(niter=75, show_progress=True)
+bnmf_model = BNMF(rm, num_bases=K)
+bnmf_model.factorize(niter=66, show_progress=True)
 
 movies = bnmf_model.W
 users = bnmf_model.H
-np.savetxt("output/dimmoviesK50.csv", movies)
-np.savetxt("output/dimusersK50.csv", users)
+np.savetxt("./output/factorisations/bnmf/dimmoviesK%d.csv" % K, movies)
+np.savetxt("./output/factorisations/bnmf/dimusersK%d.csv" % K, users)
 
 base_movies = ratings["movieId"].unique().tolist()
 
@@ -47,4 +49,4 @@ relevance.fillna(0, inplace=True)
 relevance = relevance.as_matrix()
 
 basis_relevance = np.dot(movies.T, relevance)
-np.savetxt("output/dimrelK50.csv", basis_relevance)
+np.savetxt("./output/factorisations/bnmf/dimrelK%d.csv" % K, basis_relevance)
