@@ -9,14 +9,14 @@ from statsmodels.formula.api import ols
 try:
     sys.argv[1]
 except IndexError:
-    K = 10
+    K = 100
 else:
     K = int(sys.argv[1])
 
 try:
     sys.argv[2]
 except IndexError:
-    fact_dir = "./output/factorisations/bnmf/"
+    fact_dir = "./output/factorisations/awnmf/"
 else:
     fact_dir = int(sys.argv[2])
 
@@ -38,12 +38,14 @@ movie_years = movie_years[movie_years["movieId"].isin(rated_movies)]
 movie_examples = []
 
 # Sample 50 movies from each basis
-for i in range(0, K):
+for i in range(0, K-0):
     col_array = np.asarray(movie_matrix[:, i])
 
-    print("Responsibility of basis %d: %d" % (i, np.linalg.norm(col_array)))
-
+    print("Responsibility of basis %d: %d" % (i, np.sum(col_array)))
     top_n_movies = col_array.argsort()[-50:][::-1]
+
+    print("\tTop 50 movies: %d" % np.sum(col_array[top_n_movies]))
+
     movie_examples.append(top_n_movies)
 
 sample_years = []
@@ -51,7 +53,7 @@ for i in movie_examples:
     sample_years.append(map(lambda x: 2000 - movie_years['year'].iloc[x], i))
 
 factor_samples = pd.DataFrame.transpose(pd.DataFrame(sample_years))
-factor_samples.columns = range(1, K + 1)
+factor_samples.columns = range(1, K - 0 + 1)
 
 # There is almost certainly a better way to do this, but Pandas is horrendous
 # and will do what it wants
@@ -70,5 +72,6 @@ fig, ax = plt.subplots()
 ax.xaxis.tick_top()
 factor_samples.boxplot(vert=0,
                        return_type='axes',
-                       column=list(reversed(range(1, K + 1))))
+                       column=list(reversed(range(1, K - 0 + 1))))
 plt.show(fig)
+""""""

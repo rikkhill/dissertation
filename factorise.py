@@ -8,7 +8,7 @@ try:
     sys.argv[1]
 except IndexError:
     # Sensible default
-    K = 10
+    K = 30
 else:
     K = int(sys.argv[1])
 

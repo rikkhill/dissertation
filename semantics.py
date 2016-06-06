@@ -9,14 +9,14 @@ import sys
 try:
     sys.argv[1]
 except IndexError:
-    dim = 10
+    dim = 0
 else:
     dim = int(sys.argv[1])
 
 try:
     sys.argv[2]
 except IndexError:
-    factor_dir = "./output/factorisations/wnmf/"
+    factor_dir = "./output/factorisations/awnmf/"
 else:
     factor_dir = sys.argv[2]
 
