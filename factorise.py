@@ -16,9 +16,9 @@ else:
 # df = pd.read_csv("./data/1M/ratings.dat", sep='::', engine='python')
 # df.columns = ['userId', 'movieId', 'rating', 'timestamp']
 
-df = pd.read_csv("./data/1M/partitioned.csv")
+df = pd.read_csv("./data/1M/partitioned_10pc.csv")
 # Zero out test set elements
-df["rating"][df["training"] == 1] = 0
+df["rating"][df["training"] == 0] = 0
 
 rated_movies = df['movieId'].unique().tolist()
 
@@ -42,7 +42,7 @@ def callout(arg):
     print(arg.frobenius_norm(complement=True))
 
 nmf_model = WNMF(rMatrix, weight_matrix, num_bases=K, mask_zeros=True)
-nmf_model.factorize(niter=100, show_progress=True) #, epoch_hook=lambda x: callout(x))
+nmf_model.factorize(niter=100, show_progress=True, epoch_hook=lambda x: callout(x))
 
 movies = nmf_model.W
 users = nmf_model.H

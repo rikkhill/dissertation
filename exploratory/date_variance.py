@@ -3,20 +3,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import statsmodels.api as sm
-from statsmodels.formula.api import ols
+from statsmodels.formula.api import ols, glm
 
 
 try:
     sys.argv[1]
 except IndexError:
-    K = 100
+    K = 30
 else:
     K = int(sys.argv[1])
 
 try:
     sys.argv[2]
 except IndexError:
-    fact_dir = "./output/factorisations/awnmf/"
+    fact_dir = "./output/factorisations/wnmf/"
 else:
     fact_dir = int(sys.argv[2])
 
@@ -61,11 +61,16 @@ factor_frame = pd.DataFrame.transpose(factor_samples).stack().reset_index()
 factor_frame.columns = ['factor', 'index', 'year']
 
 # Carry out ANOVA
-fitted = ols('year ~ C(factor)', data=factor_frame).fit()
-print(sm.stats.anova_lm(fitted, typ=2))
+fitted = glm('year ~ C(factor)', data=factor_frame, family=sm.families.Poisson()).fit()
+# print(sm.stats.anova_lm(fitted, typ=2))
 # print(fitted.summary())
 
+# Carry out an f-test
+A = np.identity(len(fitted.params))
+A = A[1:, :]
 
+print fitted.f_test(A)
+"""
 # Make it look nice
 plt.style.use('ggplot')
 fig, ax = plt.subplots()
@@ -73,5 +78,4 @@ ax.xaxis.tick_top()
 factor_samples.boxplot(vert=0,
                        return_type='axes',
                        column=list(reversed(range(1, K - 0 + 1))))
-plt.show(fig)
-""""""
+plt.show(fig)"""

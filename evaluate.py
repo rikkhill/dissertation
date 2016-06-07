@@ -6,7 +6,7 @@ K = 10
 
 factor_dir = "./output/factorisations/wnmf/"
 
-partitioned = pd.read_csv("./data/1M/partitioned.csv")
+partitioned = pd.read_csv("./data/1M/partitioned_10pc.csv")
 
 # Create training set with zeroed-out values for test elements
 train = partitioned.copy()
@@ -29,5 +29,5 @@ user_matrix = np.loadtxt("%sdimusersK%d.csv" % (factor_dir, K), delimiter=" ")
 
 approx = np.dot(movie_matrix, user_matrix)
 
-print scaled_f_norm(approx, train)
-print scaled_f_norm(approx, test)
+print scaled_f_norm(approx, train, scaled=False)
+print scaled_f_norm(approx, test, scaled=False)

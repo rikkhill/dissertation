@@ -8,14 +8,15 @@ try:
     sys.argv[1]
 except IndexError:
     # Sensible default
-    K = 42
+    K = 6
 else:
     K = int(sys.argv[1])
 
 # Lets build a ratings matrix
-df = pd.read_csv("./data/1M/ratings.dat", sep='::', engine='python')
-df.columns = ['userId', 'movieId', 'rating', 'timestamp']
-
+# df = pd.read_csv("./data/1M/partitioned_10pc.csv", sep=':', engine='python')
+df = pd.read_csv("./data/1M/partitioned_10pc.csv")
+# df.columns = ['userId', 'movieId', 'rating', 'timestamp']
+df["rating"][df["training"] == 1] = 0
 
 ratings = df.pivot(index="movieId", columns="userId", values="rating")
 ratings.fillna(0, inplace=True)
@@ -39,25 +40,25 @@ def augment_vector(v):
     print(v)
 
     age_range = [
-        (0, 5),
-        (5, 10),
-        (10, 15),
-        (15, 20),
-        (20, 25),
-        (25, 30),
-        (30, 35),
-        (35, 40),
-        (40, 45),
-        (45, 50),
-        (50, 55),
-        (55, 100) # Catch all older movies
+        #(0, 5),
+        #(5, 10),
+        #(10, 15),
+        #(15, 20),
+        #(20, 25),
+        #(25, 30),
+        #(30, 35),
+        #(35, 40),
+        #(40, 45),
+        #(45, 50),
+        #(50, 55),
+        #(55, 100) # Catch all older movies
 
-        #(0, 10),
-        #(10, 20),
-        #(20, 30),
-        #(30, 40),
-        #(40, 50),
-        #(50, 100)
+        (0, 10),
+        (10, 20),
+        (20, 30),
+        (30, 40),
+        (40, 50),
+        (50, 100)
     ]
 
     stack = []
