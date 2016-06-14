@@ -9,7 +9,7 @@ import sys
 try:
     sys.argv[1]
 except IndexError:
-    dim = 10
+    dim = 29
 else:
     dim = int(sys.argv[1])
 
@@ -53,7 +53,7 @@ for i in range(0, K):
     basis_tags.append(toptwenty_tags)
 
     col_array = np.asarray(movie_matrix[:, i])
-    topten_movies = col_array.argsort()[-50:][::-1]
+    topten_movies = col_array.argsort()[-10:][::-1]
     movie_examples.append(topten_movies)
 
 movie_titles = []

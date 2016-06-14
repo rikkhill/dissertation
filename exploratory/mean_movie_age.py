@@ -28,9 +28,10 @@ ratings_year = ratings.movieId.apply(lambda x: movie_years.ix[x, 'year'])
 year_ages = pd.concat([ratings_year, ratings_age], axis=1, ignore_index=True)
 year_ages.columns = ["year", "age"]
 
-year_ages = year_ages[year_ages["year"] > 1971]
+#year_ages = year_ages[year_ages["year"] > 1971]
 
 year_means = year_ages.groupby(["year"])["age"].mean()
 
 year_means.plot()
+plt.title("Release year against mean user age, all releases")
 plt.show()

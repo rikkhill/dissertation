@@ -2,7 +2,7 @@ from performance.utils import *
 import numpy as np
 import pandas as pd
 
-K = 10
+K = 29
 
 factor_dir = "./output/factorisations/wnmf/"
 

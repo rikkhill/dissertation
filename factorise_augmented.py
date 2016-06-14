@@ -77,6 +77,8 @@ movie_years = pd.read_csv("./data/1M/movie_years.csv")
 movie_years = movie_years[movie_years["movieId"].isin(base_movies)]
 movie_years["year"] = movie_years["year"].apply(lambda x: 2000 - x)
 
+
+
 augments = movie_years["year"].as_matrix()
 augments = augment_vector(augments)
 

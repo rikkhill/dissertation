@@ -18,7 +18,7 @@ rm[rm > 0] = 1
 
 # Factorise it
 bnmf_model = BNMF(rm, num_bases=K)
-bnmf_model.factorize(niter=66, show_progress=True)
+bnmf_model.factorize(niter=100, show_progress=True)
 
 movies = bnmf_model.W
 users = bnmf_model.H

@@ -8,7 +8,7 @@ try:
     sys.argv[1]
 except IndexError:
     # Sensible default
-    K = 10
+    K = 29
 else:
     K = int(sys.argv[1])
 
@@ -30,7 +30,7 @@ rMatrix = ratings.as_matrix()
 (d_m, d_n) = rMatrix.shape
 
 # Lets make a bi-cross-validation weight matrix
-hold_out_proportion = 0.2
+hold_out_proportion = 0.05
 m_indices = np.random.choice(d_m, int(d_m * hold_out_proportion), replace=False).tolist()
 n_indices = np.random.choice(d_n, int(d_n * hold_out_proportion), replace=False).tolist()
 
