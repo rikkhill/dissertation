@@ -2,9 +2,9 @@ from performance.utils import *
 import numpy as np
 import pandas as pd
 
-K = 29
+K = 10
 
-factor_dir = "./output/factorisations/wnmf/"
+factor_dir = "./output/factorisations/pmf/"
 
 partitioned = pd.read_csv("./data/1M/partitioned_10pc.csv")
 
@@ -26,6 +26,9 @@ test = test.as_matrix()
 
 movie_matrix = np.loadtxt("%sdimmoviesK%d.csv" % (factor_dir, K), delimiter=" ")
 user_matrix = np.loadtxt("%sdimusersK%d.csv" % (factor_dir, K), delimiter=" ")
+#factor_dir = "/home/rikk/Workspace/testy/mf/"
+#movie_matrix = np.loadtxt("%sdimmoviesK10.csv" % factor_dir, delimiter=" ")
+#user_matrix = np.loadtxt("%sdimusersK10.csv" % factor_dir, delimiter=" ")
 
 approx = np.dot(movie_matrix, user_matrix)
 

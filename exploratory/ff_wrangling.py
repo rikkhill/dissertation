@@ -12,7 +12,7 @@ ff.rename(columns={'Unnamed: 0': 'ID'}, inplace=True)
 
 # ff = ff[ff["UserID"].isin(users)]
 
-ff = ff.head(10000)
+#ff = ff.head(10000)
 
 ff["value"] = 1
 ff = ff[["ProductId", "UserID", "value"]].drop_duplicates()
@@ -29,13 +29,13 @@ K = 10
 
 (m, n) = h5['ff'].shape
 
-h5['W'] = np.random.random((m, K))
-h5['H'] = np.random.random((K, n))
+#h5['W'] = np.random.random((m, K))
+#h5['H'] = np.random.random((K, n))
 
-model = CHNMF(h5['ff'], num_bases=K)
-model.W = h5['W']
-model.H = h5['H']
-model.factorize() # niter=100, show_progress=True)
+model = BNMF(h5['ff'], num_bases=K)
+#model.W = h5['W']
+#model.H = h5['H']
+model.factorize( niter=2, show_progress=True)
 
 products = model.W
 users = model.H
