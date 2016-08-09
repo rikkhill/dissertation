@@ -3,12 +3,13 @@
 import pandas as pd
 from pymf import *
 import sys
+from performance.utils import *
 
 try:
     sys.argv[1]
 except IndexError:
     # Sensible default
-    K = 6
+    K = 9
 else:
     K = int(sys.argv[1])
 
@@ -16,12 +17,12 @@ else:
 # df = pd.read_csv("./data/1M/partitioned_10pc.csv", sep=':', engine='python')
 df = pd.read_csv("./data/1M/partitioned_10pc.csv")
 # df.columns = ['userId', 'movieId', 'rating', 'timestamp']
-df["rating"][df["training"] == 1] = 0
+df["rating"][df["training"] == 0] = 0
 
 ratings = df.pivot(index="movieId", columns="userId", values="rating")
 ratings.fillna(0, inplace=True)
 
-rMatrix = ratings.as_matrix()
+rMatrix = ratings.as_matrix().T
 
 (d_m, d_n) = rMatrix.shape
 
@@ -31,42 +32,7 @@ m_indices = np.random.choice(d_m, int(d_m * hold_out_proportion), replace=False)
 n_indices = np.random.choice(d_n, int(d_n * hold_out_proportion), replace=False).tolist()
 
 weight_matrix = np.ones(rMatrix.shape)
-# weight_matrix[np.array(m_indices)[:, None], n_indices] = 0
-
-
-# Return stack of binary indicators for vector elements in ranges
-def augment_vector(v):
-
-    print(v)
-
-    age_range = [
-        #(0, 5),
-        #(5, 10),
-        #(10, 15),
-        #(15, 20),
-        #(20, 25),
-        #(25, 30),
-        #(30, 35),
-        #(35, 40),
-        #(40, 45),
-        #(45, 50),
-        #(50, 55),
-        #(55, 100) # Catch all older movies
-
-        (0, 10),
-        (10, 20),
-        (20, 30),
-        (30, 40),
-        (40, 50),
-        (50, 100)
-    ]
-
-    stack = []
-
-    for (a, b) in age_range:
-        stack.append(((v >= a) & (v < b)).astype(int))
-
-    return np.stack(stack, axis=0).T
+weight_matrix[np.array(m_indices)[:, None], n_indices] = 0
 
 
 # Make augmented variables for factorisation
@@ -77,25 +43,49 @@ movie_years = pd.read_csv("./data/1M/movie_years.csv")
 movie_years = movie_years[movie_years["movieId"].isin(base_movies)]
 movie_years["year"] = movie_years["year"].apply(lambda x: 2000 - x)
 
+w_augments = movie_years["year"].as_matrix()
+w_augments = augment_vector(w_augments)
 
+# Load user genders
+base_users = df["userId"].unique().tolist()
+user_gender = pd.read_csv("./data/1M/users.dat",
+                          sep="::",
+                          engine="python",
+                          header=None)
 
-augments = movie_years["year"].as_matrix()
-augments = augment_vector(augments)
+user_gender.columns = ["userId", "gender", "age", "occupation", "zip"]
+#user_gender = user_gender[["userId", "gender"]]
+user_gender = user_gender[user_gender["userId"].isin(base_users)]
+
+age_groups = user_gender["age"].unique().tolist()
+
+user_gender["M"] = (user_gender["gender"] == "M").astype(int)
+user_gender["F"] = (user_gender["gender"] == "F").astype(int)
+
+for age in age_groups:
+    user_gender[age] = (user_gender["age"] == age).astype(int)
+
+h_augments = user_gender[["M", "F"] + age_groups].as_matrix()
 
 
 def callout(arg):
     print(arg.frobenius_norm(complement=True))
 
-model = AWNMF(rMatrix, weight_matrix, augments, num_bases=K, mask_zeros=True)
+model = AWNMF(rMatrix,
+              weight_matrix,
+              h_augments,
+              #h_augments,
+              num_bases=K,
+              mask_zeros=True)
 
 # Use augmented binary matrix factorisation
 #model = ABNMF(rMatrix, augments, num_bases=K)
 model.factorize(niter=100, show_progress=True, epoch_hook=lambda x: callout(x))
 
-movies = model.W
-users = model.H
-np.savetxt("./output/factorisations/awnmf/dimmoviesK%d.csv" % K, movies)
-np.savetxt("./output/factorisations/awnmf/dimusersK%d.csv" % K, users)
+users = model.W.T
+movies = model.H.T
+np.savetxt("./output/factorisations/agawnmf/dimmoviesK%d.csv" % K, movies)
+np.savetxt("./output/factorisations/agawnmf/dimusersK%d.csv" % K, users)
 
 
 # Get the tag relevance matrix
@@ -119,5 +109,4 @@ relevance.fillna(0, inplace=True)
 relevance = relevance.as_matrix()
 
 basis_relevance = np.dot(movies.T, relevance)
-np.savetxt("./output/factorisations/awnmf/dimrelK%d.csv" % K, basis_relevance)
-
+np.savetxt("./output/factorisations/agawnmf/dimrelK%d.csv" % K, basis_relevance)

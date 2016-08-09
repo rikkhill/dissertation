@@ -27,8 +27,6 @@ def pull_result(fname):
 
 def augment_vector(v):
 
-    print(v)
-
     age_range = [
         #(0, 5),
         #(5, 10),

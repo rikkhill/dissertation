@@ -9,14 +9,14 @@ import sys
 try:
     sys.argv[1]
 except IndexError:
-    dim = 30
+    dim = 10
 else:
     dim = int(sys.argv[1])
 
 try:
     sys.argv[2]
 except IndexError:
-    factor_dir = "./output/factorisations/pmf/"
+    factor_dir = "./output/factorisations/wnmf/"
 else:
     factor_dir = sys.argv[2]
 
@@ -49,7 +49,7 @@ movie_examples = []
 # Get examples from movies and examples from tags for each basis
 for i in range(0, K):
     row_array = np.asarray(rel_matrix[i, :])
-    toptwenty_tags = row_array.argsort()[-30:][::-1]
+    toptwenty_tags = row_array.argsort()[-40:][::-1]
     basis_tags.append(toptwenty_tags)
 
     col_array = np.asarray(movie_matrix[:, i])
@@ -87,4 +87,3 @@ for i in range(0, K):
     print("\nBasis %d" % (i + 1))
     print(best_tag_words[i])
     print(movie_titles[i])
-

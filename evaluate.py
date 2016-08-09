@@ -4,13 +4,14 @@ import pandas as pd
 
 K = 10
 
-factor_dir = "./output/factorisations/pmf/"
+factor_dir = "./output/factorisations/nimfa_bmf/"
 
 partitioned = pd.read_csv("./data/1M/partitioned_10pc.csv")
 
 # Create training set with zeroed-out values for test elements
 train = partitioned.copy()
 train["rating"][train["training"] == 0] = 0
+#train["rating"][train["training"] == 1] = 1
 
 train = train.pivot(index="movieId", columns="userId", values="rating").fillna(0)
 train.fillna(0, inplace=True)
@@ -19,6 +20,7 @@ train = train.as_matrix()
 # Create test set with zeroed-out values for training elements
 test = partitioned.copy()
 test["rating"][test["training"] == 1] = 0
+#test["rating"][test["training"] == 0] = 1
 
 test = test.pivot(index="movieId", columns="userId", values="rating").fillna(0)
 test.fillna(0, inplace=True)
@@ -31,6 +33,13 @@ user_matrix = np.loadtxt("%sdimusersK%d.csv" % (factor_dir, K), delimiter=" ")
 #user_matrix = np.loadtxt("%sdimusersK10.csv" % factor_dir, delimiter=" ")
 
 approx = np.dot(movie_matrix, user_matrix)
+
+print approx.min()
+print approx.max()
+print approx.mean()
+
+approx = approx > approx.mean()
+
 
 print scaled_f_norm(approx, train, scaled=False)
 print scaled_f_norm(approx, test, scaled=False)

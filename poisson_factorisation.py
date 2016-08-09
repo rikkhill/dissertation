@@ -1,9 +1,10 @@
 # Poisson factorisation of MovieLens data
 
 import pandas as pd
+from performance.utils import *
 from pymf import *
 
-K = 30
+K = 16
 
 df = pd.read_csv("./data/1M/partitioned_10pc.csv")
 df["rating"][df["training"] == 0] = 0
@@ -14,23 +15,28 @@ ratings.fillna(0, inplace=True)
 base_movies = df["movieId"].unique().tolist()
 rMatrix = ratings.as_matrix()
 
-# rMatrix[rMatrix > 0] = 1
+# Load movie years
+movie_years = pd.read_csv("./data/1M/movie_years.csv")
+# strip non-relevant entries
+movie_years = movie_years[movie_years["movieId"].isin(base_movies)]
+movie_years["year"] = movie_years["year"].apply(lambda x: 2000 - x)
 
-model = PMF(rMatrix, num_bases=K)
+augments = movie_years["year"].as_matrix()
+augments = augment_vector(augments)
+
+print augments.shape
+print rMatrix.shape
+
+model = PMF(rMatrix, num_bases=K, augments=augments)
 
 model.factorize(niter=100, show_progress=True)
 
-movies = model.Ew.T
-users = model.Eh.T
+movies = model.Et
+users = model.Eb
 approx = np.dot(movies, users)
 
-print movies.shape
-print users.shape
-
-print approx.shape
-
-np.savetxt("./output/factorisations/pmf/dimmoviesK%d.csv" % K, movies)
-np.savetxt("./output/factorisations/pmf/dimusersK%d.csv" % K, users)
+np.savetxt("./output/factorisations/apmf/dimmoviesK%d.csv" % K, movies)
+np.savetxt("./output/factorisations/apmf/dimusersK%d.csv" % K, users)
 
 # Get the tag relevance matrix
 gr = pd.read_csv("./data/genome/tag_relevance.dat", header=None, sep='\t')
@@ -53,4 +59,4 @@ relevance.fillna(0, inplace=True)
 relevance = relevance.as_matrix()
 
 basis_relevance = np.dot(movies.T, relevance)
-np.savetxt("./output/factorisations/pmf/dimrelK%d.csv" % K, basis_relevance)
+np.savetxt("./output/factorisations/apmf/dimrelK%d.csv" % K, basis_relevance)
