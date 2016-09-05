@@ -8,7 +8,7 @@ try:
     sys.argv[1]
 except IndexError:
     # Sensible default
-    K = 10
+    K = 12
 else:
     K = int(sys.argv[1])
 
@@ -43,7 +43,7 @@ def callout(arg):
 
 nmf_model = WNMF(rMatrix, weight_matrix, num_bases=K, mask_zeros=True)
 #nmf_model = BNMF(rMatrix, weight_matrix, num_bases=K, mask_zeros=True)
-nmf_model.factorize(niter=100, show_progress=True, epoch_hook=lambda x: callout(x))
+nmf_model.factorize(niter=100, show_progress=True, epoch_hook=lambda x: callout( x))
 
 movies = nmf_model.W
 users = nmf_model.H

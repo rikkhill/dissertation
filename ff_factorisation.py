@@ -3,7 +3,7 @@ import numpy as np
 import h5py
 from pymf import *
 
-ff = pd.read_csv("./data/FF/superuser_purchases.csv")
+ff = pd.read_csv("./data/FF/dense_10pc_partition_purchases.csv")
 
 
 productmap = pd.DataFrame()
@@ -30,9 +30,9 @@ print matrix.shape
 
 K = 100
 model = BNMF(matrix, num_bases=K)
-model.factorize(niter=40, show_progress=True)
+model.factorize(niter=55, show_progress=True)
 
 products = model.W
 users = model.H
-np.savetxt("./output/factorisations/FF/dimproductsK%d.csv" % K, products)
-np.savetxt("./output/factorisations/FF/dimusersK%d.csv" % K, users)
+np.savetxt("./output/factorisations/FF_dense/dimproductsK%d.csv" % K, products)
+np.savetxt("./output/factorisations/FF_dense/dimusersK%d.csv" % K, users)

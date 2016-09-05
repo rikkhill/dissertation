@@ -3,12 +3,12 @@
 import pandas as pd
 import numpy as np
 
-K = 30
+K = 10
 
-factor_dir = "./output/factorisations/FF/"
+factor_dir = "./output/factorisations/FF_dense/"
 
 # Get lookup between product/user IDs and factor matrix indices
-ff = pd.read_csv("./data/FF/superuser_purchases.csv")
+ff = pd.read_csv("./data/FF/dense_10pc_partition_purchases.csv")
 ff.rename(columns={'Unnamed: 0': 'ID'}, inplace=True)
 #ff = ff.head(30000)
 ff = ff[["ProductId", "UserID"]].drop_duplicates()

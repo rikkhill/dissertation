@@ -4,8 +4,17 @@ import numpy as np
 import pandas as pd
 
 
-def scaled_f_norm(m_trained, m_comparison, scaled=True):
+# Standard F norm with no masking or scaling or augments
+
+def f_norm(m_trained, m_comparison):
+    diff = m_trained - m_comparison
+    norm = np.sqrt(np.sum(diff * diff))
+    return norm
+
+
+def scaled_f_norm(m_trained, m_comparison, scaled=True, augments=0):
     mask = (m_comparison > 0).astype(int)
+    mask[:, 0:augments] = 0
     # Ignore zero-values in comparison
     diff = (m_trained - m_comparison) * mask
     f_norm = np.sqrt(np.sum(diff * diff))

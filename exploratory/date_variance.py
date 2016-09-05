@@ -9,14 +9,14 @@ from statsmodels.formula.api import ols, glm
 try:
     sys.argv[1]
 except IndexError:
-    K = 30
+    K = 22
 else:
     K = int(sys.argv[1])
 
 try:
     sys.argv[2]
 except IndexError:
-    fact_dir = "./output/factorisations/wnmf/"
+    fact_dir = "./output/factorisations/apy12wnmf/"
 else:
     fact_dir = int(sys.argv[2])
 
@@ -24,6 +24,8 @@ base_dir = "./data/1M/"
 
 # Load movie factor matrix
 movie_matrix = np.loadtxt("%sdimmoviesK%d.csv" % (fact_dir, K), delimiter=" ")
+movie_matrix = movie_matrix.T
+print movie_matrix.shape
 
 # Get a list of all relevant movies
 ratings = pd.read_csv(base_dir + "ratings.dat", sep="::", header=None, engine='python')
@@ -38,7 +40,7 @@ movie_years = movie_years[movie_years["movieId"].isin(rated_movies)]
 movie_examples = []
 
 # Sample 50 movies from each basis
-for i in range(0, K-0):
+for i in range(0, K - 12):
     col_array = np.asarray(movie_matrix[:, i])
 
     print("Responsibility of basis %d: %d" % (i, np.sum(col_array)))
@@ -53,7 +55,7 @@ for i in movie_examples:
     sample_years.append(map(lambda x: 2000 - movie_years['year'].iloc[x], i))
 
 factor_samples = pd.DataFrame.transpose(pd.DataFrame(sample_years))
-factor_samples.columns = range(1, K - 0 + 1)
+factor_samples.columns = range(1, K - 12 + 1)
 
 # There is almost certainly a better way to do this, but Pandas is horrendous
 # and will do what it wants
@@ -70,12 +72,17 @@ A = np.identity(len(fitted.params))
 A = A[1:, :]
 
 print fitted.f_test(A)
-"""
+
+print plt.style.available
+
 # Make it look nice
 plt.style.use('ggplot')
 fig, ax = plt.subplots()
-ax.xaxis.tick_top()
+#ax.xaxis.tick_top()
 factor_samples.boxplot(vert=0,
                        return_type='axes',
-                       column=list(reversed(range(1, K - 0 + 1))))
-plt.show(fig)"""
+                       column=list(reversed(range(1, K - 12 + 1))))
+plt.xlabel("Number of years since release")
+plt.ylabel("Factorisation basis")
+plt.title("Distribution of time since release by factorisation basis")
+plt.show(fig)

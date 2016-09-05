@@ -16,7 +16,7 @@ else:
 try:
     sys.argv[2]
 except IndexError:
-    factor_dir = "./output/factorisations/FF/"
+    factor_dir = "./output/factorisations/FF_dense/"
 else:
     factor_dir = sys.argv[2]
 
@@ -24,13 +24,16 @@ base_dir = "./data/FF/"
 
 # Get a list of product descriptions in the training
 # set, ordered by ProductId
-ratings = pd.read_csv("%ssuperuser_purchases.csv" % base_dir)
+ratings = pd.read_csv("%sdense_10pc_partition_purchases.csv" % base_dir)
 base_products = pd.read_csv("%sproductinfo.csv" % base_dir,
                             sep=",",
                             error_bad_lines=False,
                             warn_bad_lines=True)
 base_products.rename(columns={'ProductID': 'ProductId'}, inplace=True)
 rated_products = ratings['ProductId'].unique().tolist()
+
+
+
 base_products = base_products[base_products['ProductId'].isin(rated_products)]
 base_products = base_products[["ProductId", "desc"]]
 base_products = base_products.sort_values("ProductId")
@@ -50,19 +53,28 @@ product_matrix = np.loadtxt("%sdimproductsK%d.csv" % (factor_dir, dim), delimite
 basis_tags = []
 product_examples = []
 
+
+print(len(base_products))
+
+print product_matrix.shape
+
 # Get examples from movies and examples from tags for each basis
 for i in range(0, K):
     row_array = np.asarray(rel_matrix[i, :])
-    toptwenty_tags = row_array.argsort()[-40:][::-1]
+    toptwenty_tags = row_array.argsort()[-10:][::-1]
     basis_tags.append(toptwenty_tags)
 
     col_array = np.asarray(product_matrix[:, i])
-    topten_products = col_array.argsort()[-14:][::-1]
+    topten_products = col_array.argsort()[-20:][::-1]
     product_examples.append(topten_products)
 
 movie_titles = []
 for m in product_examples:
-    movie_titles.append([base_products['ProductId'].iloc[n] for n in m])
+    try:
+        movie_titles.append([rated_products[n] for n in m])
+    except IndexError as e:
+        print(m)
+
 
 # Get a list of lists of tags for each basis
 
