@@ -11,6 +11,6 @@ To produce a k=10 factorisation of the MovieLens dataset, create a directory `./
 
 To produce responsibility keywords and exemplar films from this output, run `./semantics.py 10 ./output/factorisations/wnmf`
 
-The script `sample_factorisation.py` will produce training and test error results for the relevant method of matrix factorisation in a file in `./outpiut/results/`. Inspection of the script is recommended.
+The script `sample_factorisation.py` will produce training and test error results for the relevant method of matrix factorisation in a file in `./output/results/`. Inspection of the script is recommended.
 
 The script `factorise_augmented.py` is an ad-hoc script which wrangles relevant side-information and constructs the appropriate matrix for factorisation with an appropriate method. Inspection of this script is also recommended.
